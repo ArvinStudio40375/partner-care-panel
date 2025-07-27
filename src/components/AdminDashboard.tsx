@@ -26,7 +26,11 @@ interface TopUp {
   nominal: number;
   wa: string;
   status: string;
-  mitra?: Mitra;
+  mitra?: {
+    nama: string;
+    email: string;
+    wa: string;
+  };
 }
 
 interface ChatMessage {
@@ -44,7 +48,10 @@ interface Invoice {
   waktu_mulai: string;
   waktu_selesai: string;
   total: number;
-  mitra?: Mitra;
+  mitra?: {
+    nama: string;
+    email: string;
+  };
 }
 
 const AdminDashboard = () => {
@@ -176,10 +183,26 @@ const AdminDashboard = () => {
       return;
     }
 
-    const { error: saldoError } = await supabase.rpc('increment_saldo', {
-      mitra_id: mitraId,
-      amount: nominal
-    });
+    // Update mitra saldo
+    const { data: currentMitra, error: fetchError } = await supabase
+      .from('mitra')
+      .select('saldo')
+      .eq('id', mitraId)
+      .single();
+
+    if (fetchError) {
+      toast({
+        title: 'Error',
+        description: 'Gagal mengambil data saldo mitra',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const { error: saldoError } = await supabase
+      .from('mitra')
+      .update({ saldo: currentMitra.saldo + nominal })
+      .eq('id', mitraId);
 
     if (saldoError) {
       toast({
@@ -228,10 +251,25 @@ const AdminDashboard = () => {
       return;
     }
 
-    const { error } = await supabase.rpc('increment_saldo', {
-      mitra_id: selectedMitra,
-      amount: parseInt(manualSaldo)
-    });
+    const { data: currentMitra, error: fetchError } = await supabase
+      .from('mitra')
+      .select('saldo')
+      .eq('id', selectedMitra)
+      .single();
+
+    if (fetchError) {
+      toast({
+        title: 'Error',
+        description: 'Gagal mengambil data saldo mitra',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const { error } = await supabase
+      .from('mitra')
+      .update({ saldo: currentMitra.saldo + parseInt(manualSaldo) })
+      .eq('id', selectedMitra);
 
     if (error) {
       toast({
