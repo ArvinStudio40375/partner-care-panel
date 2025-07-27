@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -10,6 +9,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { 
+  Home, 
+  UserCheck, 
+  CreditCard, 
+  HandCoins, 
+  Users, 
+  MessageSquare, 
+  FileText, 
+  Settings, 
+  LogOut,
+  Bell,
+  Search,
+  TrendingUp,
+  DollarSign,
+  Clock,
+  CheckCircle
+} from 'lucide-react';
 
 interface Mitra {
   id: string;
@@ -352,88 +368,192 @@ const AdminDashboard = () => {
     window.location.reload();
   };
 
+  const stats = [
+    {
+      title: 'Total Mitra',
+      value: mitras.length,
+      icon: Users,
+      color: 'bg-blue-500',
+      change: '+12%'
+    },
+    {
+      title: 'Total Saldo Sistem',
+      value: `Rp ${mitras.reduce((sum, mitra) => sum + mitra.saldo, 0).toLocaleString()}`,
+      icon: DollarSign,
+      color: 'bg-green-500',
+      change: '+8%'
+    },
+    {
+      title: 'Top Up Menunggu',
+      value: topups.filter(t => t.status === 'menunggu').length,
+      icon: Clock,
+      color: 'bg-orange-500',
+      change: '-5%'
+    },
+    {
+      title: 'Total Invoice',
+      value: invoices.length,
+      icon: FileText,
+      color: 'bg-purple-500',
+      change: '+23%'
+    }
+  ];
+
+  const tabItems = [
+    { id: 'beranda', label: 'Beranda', icon: Home },
+    { id: 'verifikasi', label: 'Verifikasi', icon: UserCheck },
+    { id: 'topup', label: 'Top Up', icon: CreditCard },
+    { id: 'manual', label: 'Manual', icon: HandCoins },
+    { id: 'kelola', label: 'Kelola', icon: Users },
+    { id: 'chat', label: 'Chat', icon: MessageSquare },
+    { id: 'invoice', label: 'Invoice', icon: FileText },
+    { id: 'settings', label: 'Settings', icon: Settings },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b border-gray-200">
+        <div className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-800">Admin SmartCare</h1>
-            <Button onClick={logout} variant="outline">
-              Logout
-            </Button>
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-lg">S</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800">SmartCare Admin</h1>
+                <p className="text-sm text-gray-600">Dashboard Management</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input 
+                  placeholder="Cari..." 
+                  className="pl-10 w-64 border-gray-300 focus:border-orange-500"
+                />
+              </div>
+              <Button variant="ghost" size="sm" className="relative">
+                <Bell className="h-5 w-5" />
+                <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 rounded-full flex items-center justify-center text-xs text-white">
+                  3
+                </span>
+              </Button>
+              <Button onClick={logout} variant="outline" size="sm" className="border-gray-300">
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-8">
-            <TabsTrigger value="beranda">Beranda</TabsTrigger>
-            <TabsTrigger value="verifikasi">Verifikasi</TabsTrigger>
-            <TabsTrigger value="topup">Top Up</TabsTrigger>
-            <TabsTrigger value="manual">Manual</TabsTrigger>
-            <TabsTrigger value="kelola">Kelola</TabsTrigger>
-            <TabsTrigger value="chat">Chat</TabsTrigger>
-            <TabsTrigger value="invoice">Invoice</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-          </TabsList>
+      <div className="container mx-auto px-6 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          {/* Modern Tab Navigation */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-2">
+            <TabsList className="grid w-full grid-cols-8 bg-gray-50 rounded-xl p-1">
+              {tabItems.map((item) => (
+                <TabsTrigger 
+                  key={item.id} 
+                  value={item.id}
+                  className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-lg transition-all duration-200"
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{item.label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
-          <TabsContent value="beranda" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card>
+          <TabsContent value="beranda" className="space-y-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((stat, index) => (
+                <Card key={index} className="border-0 shadow-md hover:shadow-lg transition-shadow duration-200 bg-white rounded-2xl">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className={`p-3 rounded-xl ${stat.color} bg-opacity-10`}>
+                          <stat.icon className={`h-6 w-6 ${stat.color.replace('bg-', 'text-')}`} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                          <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center text-sm text-green-600">
+                        <TrendingUp className="h-4 w-4 mr-1" />
+                        {stat.change}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="border-0 shadow-md rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 text-white">
                 <CardHeader>
-                  <CardTitle>Total Mitra</CardTitle>
+                  <CardTitle className="flex items-center text-white">
+                    <UserCheck className="h-5 w-5 mr-2" />
+                    Verifikasi Menunggu
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold">{mitras.length}</p>
+                  <div className="text-3xl font-bold mb-2">
+                    {mitras.filter(mitra => mitra.status_verifikasi === 'belum').length}
+                  </div>
+                  <p className="text-orange-100">Mitra perlu diverifikasi</p>
                 </CardContent>
               </Card>
-              <Card>
+
+              <Card className="border-0 shadow-md rounded-2xl bg-gradient-to-r from-green-500 to-teal-500 text-white">
                 <CardHeader>
-                  <CardTitle>Total Saldo Sistem</CardTitle>
+                  <CardTitle className="flex items-center text-white">
+                    <Clock className="h-5 w-5 mr-2" />
+                    Top Up Pending
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold">
-                    Rp {mitras.reduce((sum, mitra) => sum + mitra.saldo, 0).toLocaleString()}
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Top Up Menunggu</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold">
+                  <div className="text-3xl font-bold mb-2">
                     {topups.filter(t => t.status === 'menunggu').length}
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Total Invoice</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold">{invoices.length}</p>
+                  </div>
+                  <p className="text-green-100">Permintaan top up menunggu</p>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          <TabsContent value="verifikasi" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Verifikasi Mitra</CardTitle>
+          <TabsContent value="verifikasi" className="space-y-6">
+            <Card className="border-0 shadow-md rounded-2xl bg-white">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="flex items-center text-gray-800">
+                  <UserCheck className="h-5 w-5 mr-2" />
+                  Verifikasi Mitra
+                </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="space-y-4">
                   {mitras.filter(mitra => mitra.status_verifikasi === 'belum').map(mitra => (
-                    <div key={mitra.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h3 className="font-semibold">{mitra.nama}</h3>
-                        <p className="text-sm text-gray-600">{mitra.email}</p>
-                        <p className="text-sm text-gray-600">{mitra.wa}</p>
+                    <div key={mitra.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                          <span className="text-white font-semibold">{mitra.nama.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-800">{mitra.nama}</h3>
+                          <p className="text-sm text-gray-600">{mitra.email}</p>
+                          <p className="text-sm text-gray-600">{mitra.wa}</p>
+                        </div>
                       </div>
-                      <Button onClick={() => verifyMitra(mitra.id)}>
+                      <Button 
+                        onClick={() => verifyMitra(mitra.id)}
+                        className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white rounded-xl"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2" />
                         Verifikasi
                       </Button>
                     </div>
@@ -443,30 +563,40 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="topup" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Konfirmasi Top Up</CardTitle>
+          <TabsContent value="topup" className="space-y-6">
+            <Card className="border-0 shadow-md rounded-2xl bg-white">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="flex items-center text-gray-800">
+                  <CreditCard className="h-5 w-5 mr-2" />
+                  Konfirmasi Top Up
+                </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="space-y-4">
                   {topups.filter(topup => topup.status === 'menunggu').map(topup => (
-                    <div key={topup.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h3 className="font-semibold">{topup.mitra?.nama}</h3>
-                        <p className="text-sm text-gray-600">Nominal: Rp {topup.nominal.toLocaleString()}</p>
-                        <p className="text-sm text-gray-600">WA: {topup.wa}</p>
+                    <div key={topup.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                          <DollarSign className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-800">{topup.mitra?.nama}</h3>
+                          <p className="text-sm text-gray-600">Nominal: Rp {topup.nominal.toLocaleString()}</p>
+                          <p className="text-sm text-gray-600">WA: {topup.wa}</p>
+                        </div>
                       </div>
-                      <div className="space-x-2">
+                      <div className="flex space-x-2">
                         <Button 
                           onClick={() => approveTopup(topup.id, topup.mitra_id, topup.nominal)}
-                          variant="default"
+                          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white rounded-xl"
                         >
+                          <CheckCircle className="h-4 w-4 mr-2" />
                           Setujui
                         </Button>
                         <Button 
                           onClick={() => rejectTopup(topup.id)}
-                          variant="destructive"
+                          variant="outline"
+                          className="border-red-300 text-red-600 hover:bg-red-50 rounded-xl"
                         >
                           Tolak
                         </Button>
@@ -478,17 +608,20 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="manual" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Kirim Saldo Manual</CardTitle>
+          <TabsContent value="manual" className="space-y-6">
+            <Card className="border-0 shadow-md rounded-2xl bg-white">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="flex items-center text-gray-800">
+                  <HandCoins className="h-5 w-5 mr-2" />
+                  Kirim Saldo Manual
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+              <CardContent className="p-6">
+                <div className="space-y-6">
                   <div>
-                    <Label htmlFor="mitra-select">Pilih Mitra</Label>
+                    <Label htmlFor="mitra-select" className="text-sm font-medium text-gray-700">Pilih Mitra</Label>
                     <Select value={selectedMitra} onValueChange={setSelectedMitra}>
-                      <SelectTrigger>
+                      <SelectTrigger className="mt-2 border-gray-300 focus:border-orange-500 rounded-xl">
                         <SelectValue placeholder="Pilih mitra" />
                       </SelectTrigger>
                       <SelectContent>
@@ -501,49 +634,64 @@ const AdminDashboard = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="manual-saldo">Nominal</Label>
+                    <Label htmlFor="manual-saldo" className="text-sm font-medium text-gray-700">Nominal</Label>
                     <Input
                       id="manual-saldo"
                       type="number"
                       value={manualSaldo}
                       onChange={(e) => setManualSaldo(e.target.value)}
                       placeholder="Masukkan nominal"
+                      className="mt-2 border-gray-300 focus:border-orange-500 rounded-xl"
                     />
                   </div>
-                  <Button onClick={sendManualSaldo}>Kirim Saldo</Button>
+                  <Button 
+                    onClick={sendManualSaldo}
+                    className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl"
+                  >
+                    <HandCoins className="h-4 w-4 mr-2" />
+                    Kirim Saldo
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="kelola" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Kelola Mitra</CardTitle>
+          <TabsContent value="kelola" className="space-y-6">
+            <Card className="border-0 shadow-md rounded-2xl bg-white">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="flex items-center text-gray-800">
+                  <Users className="h-5 w-5 mr-2" />
+                  Kelola Mitra
+                </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="space-y-4">
                   {mitras.map(mitra => (
-                    <div key={mitra.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h3 className="font-semibold">{mitra.nama}</h3>
-                        <p className="text-sm text-gray-600">{mitra.email}</p>
-                        <p className="text-sm text-gray-600">Saldo: Rp {mitra.saldo.toLocaleString()}</p>
-                        <Badge variant={mitra.status_verifikasi === 'sudah' ? 'default' : 'secondary'}>
-                          {mitra.status_verifikasi}
-                        </Badge>
+                    <div key={mitra.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                          <span className="text-white font-semibold">{mitra.nama.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-800">{mitra.nama}</h3>
+                          <p className="text-sm text-gray-600">{mitra.email}</p>
+                          <p className="text-sm text-gray-600">Saldo: Rp {mitra.saldo.toLocaleString()}</p>
+                          <Badge variant={mitra.status_verifikasi === 'sudah' ? 'default' : 'secondary'} className="mt-1">
+                            {mitra.status_verifikasi}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="space-x-2">
-                        <Button variant="outline" size="sm">
+                      <div className="flex space-x-2">
+                        <Button variant="outline" size="sm" className="border-gray-300 rounded-xl">
                           Detail
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="destructive" size="sm">
+                            <Button variant="outline" size="sm" className="border-red-300 text-red-600 hover:bg-red-50 rounded-xl">
                               Hapus
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent>
+                          <AlertDialogContent className="rounded-2xl">
                             <AlertDialogHeader>
                               <AlertDialogTitle>Hapus Mitra</AlertDialogTitle>
                               <AlertDialogDescription>
@@ -551,8 +699,8 @@ const AdminDashboard = () => {
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Batal</AlertDialogCancel>
-                              <AlertDialogAction>Hapus</AlertDialogAction>
+                              <AlertDialogCancel className="rounded-xl">Batal</AlertDialogCancel>
+                              <AlertDialogAction className="bg-red-500 hover:bg-red-600 rounded-xl">Hapus</AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
@@ -564,18 +712,21 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="chat" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Live Chat</CardTitle>
+          <TabsContent value="chat" className="space-y-6">
+            <Card className="border-0 shadow-md rounded-2xl bg-white">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="flex items-center text-gray-800">
+                  <MessageSquare className="h-5 w-5 mr-2" />
+                  Live Chat
+                </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="space-y-4">
                   {chats.map(chat => (
-                    <div key={chat.id} className="p-4 border rounded-lg">
+                    <div key={chat.id} className="p-4 bg-gray-50 rounded-xl">
                       <div className="flex justify-between items-start">
                         <div>
-                          <p className="font-semibold">
+                          <p className="font-semibold text-gray-800">
                             {chat.from_id === 'admin' ? 'Admin' : chat.from_id}
                           </p>
                           <p className="text-sm text-gray-600">{chat.message}</p>
@@ -590,11 +741,14 @@ const AdminDashboard = () => {
                             placeholder="Balas pesan..."
                             value={newChatMessage}
                             onChange={(e) => setNewChatMessage(e.target.value)}
+                            className="border-gray-300 focus:border-orange-500 rounded-xl"
                           />
                           <Button 
                             size="sm" 
                             onClick={() => sendChatMessage(chat.from_id)}
+                            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl"
                           >
+                            <MessageSquare className="h-4 w-4 mr-2" />
                             Kirim
                           </Button>
                         </div>
@@ -606,25 +760,33 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="invoice" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Laporan Invoice</CardTitle>
+          <TabsContent value="invoice" className="space-y-6">
+            <Card className="border-0 shadow-md rounded-2xl bg-white">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="flex items-center text-gray-800">
+                  <FileText className="h-5 w-5 mr-2" />
+                  Laporan Invoice
+                </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="space-y-4">
                   {invoices.map(invoice => (
-                    <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h3 className="font-semibold">{invoice.mitra?.nama}</h3>
-                        <p className="text-sm text-gray-600">
-                          Total: Rp {invoice.total.toLocaleString()}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Waktu: {new Date(invoice.waktu_mulai).toLocaleString()}
-                        </p>
+                    <div key={invoice.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                          <FileText className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-800">{invoice.mitra?.nama}</h3>
+                          <p className="text-sm text-gray-600">
+                            Total: Rp {invoice.total.toLocaleString()}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            Waktu: {new Date(invoice.waktu_mulai).toLocaleString()}
+                          </p>
+                        </div>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="border-gray-300 rounded-xl">
                         Unduh
                       </Button>
                     </div>
@@ -634,24 +796,34 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="settings" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pengaturan</CardTitle>
+          <TabsContent value="settings" className="space-y-6">
+            <Card className="border-0 shadow-md rounded-2xl bg-white">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="flex items-center text-gray-800">
+                  <Settings className="h-5 w-5 mr-2" />
+                  Pengaturan
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+              <CardContent className="p-6">
+                <div className="space-y-6">
                   <div>
-                    <Label htmlFor="new-password">Password Baru</Label>
+                    <Label htmlFor="new-password" className="text-sm font-medium text-gray-700">Password Baru</Label>
                     <Input
                       id="new-password"
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Masukkan password baru"
+                      className="mt-2 border-gray-300 focus:border-orange-500 rounded-xl"
                     />
                   </div>
-                  <Button onClick={changePassword}>Ubah Password</Button>
+                  <Button 
+                    onClick={changePassword}
+                    className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Ubah Password
+                  </Button>
                 </div>
               </CardContent>
             </Card>
