@@ -1,0 +1,404 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Admin SmartCare</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-heartbeat"></i>
+                <h3>Admin SmartCare</h3>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#beranda" class="nav-item active" data-section="beranda">
+                    <i class="fas fa-home"></i>
+                    <span>Beranda</span>
+                </a>
+                <a href="#verifikasi" class="nav-item" data-section="verifikasi">
+                    <i class="fas fa-user-check"></i>
+                    <span>Verifikasi Mitra</span>
+                </a>
+                <a href="#topup" class="nav-item" data-section="topup">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Konfirmasi Top Up</span>
+                </a>
+                <a href="#kirim-saldo" class="nav-item" data-section="kirim-saldo">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Kirim Saldo Manual</span>
+                </a>
+                <a href="#kelola-mitra" class="nav-item" data-section="kelola-mitra">
+                    <i class="fas fa-users"></i>
+                    <span>Kelola Mitra</span>
+                </a>
+                <a href="#live-chat" class="nav-item" data-section="live-chat">
+                    <i class="fas fa-comments"></i>
+                    <span>Live Chat</span>
+                </a>
+                <a href="#invoice" class="nav-item" data-section="invoice">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>Laporan Invoice</span>
+                </a>
+                <a href="#pengaturan" class="nav-item" data-section="pengaturan">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button class="btn btn-danger" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="main-header">
+                <h1 id="pageTitle">Dashboard Admin</h1>
+                <div class="header-actions">
+                    <span id="adminInfo"></span>
+                </div>
+            </header>
+            
+            <div class="content-wrapper">
+                <!-- Beranda Section -->
+                <section id="beranda" class="content-section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-users stat-icon"></i>
+                            <div class="stat-info">
+                                <h3 id="totalMitra">0</h3>
+                                <p>Total Mitra</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-wallet stat-icon"></i>
+                            <div class="stat-info">
+                                <h3 id="totalSaldo">Rp 0</h3>
+                                <p>Total Saldo Sistem</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-clock stat-icon"></i>
+                            <div class="stat-info">
+                                <h3 id="topupMenunggu">0</h3>
+                                <p>Top Up Menunggu</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-file-invoice stat-icon"></i>
+                            <div class="stat-info">
+                                <h3 id="totalInvoice">0</h3>
+                                <p>Total Invoice</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-activities">
+                        <h2>Aktivitas Terbaru</h2>
+                        <div id="recentActivities" class="activity-list"></div>
+                    </div>
+                </section>
+                
+                <!-- Verifikasi Mitra Section -->
+                <section id="verifikasi" class="content-section">
+                    <h2>Verifikasi Mitra</h2>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Email</th>
+                                    <th>WhatsApp</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="verifikasiTable"></tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Konfirmasi Top Up Section -->
+                <section id="topup" class="content-section">
+                    <h2>Konfirmasi Top Up</h2>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama Mitra</th>
+                                    <th>Nominal</th>
+                                    <th>WhatsApp</th>
+                                    <th>Status</th>
+                                    <th>Tanggal</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topupTable"></tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Kirim Saldo Manual Section -->
+                <section id="kirim-saldo" class="content-section">
+                    <h2>Kirim Saldo Manual</h2>
+                    <div class="form-container">
+                        <form id="kirimSaldoForm">
+                            <div class="form-group">
+                                <label for="mitraSelect">Pilih Mitra</label>
+                                <select id="mitraSelect" required>
+                                    <option value="">Pilih Mitra</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="nominalSaldo">Nominal</label>
+                                <input type="number" id="nominalSaldo" min="1000" step="1000" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                                Kirim Saldo
+                            </button>
+                        </form>
+                    </div>
+                </section>
+                
+                <!-- Kelola Mitra Section -->
+                <section id="kelola-mitra" class="content-section">
+                    <h2>Kelola Mitra</h2>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Email</th>
+                                    <th>WhatsApp</th>
+                                    <th>Status</th>
+                                    <th>Saldo</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kelolaMitraTable"></tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Live Chat Section -->
+                <section id="live-chat" class="content-section">
+                    <h2>Live Chat</h2>
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages"></div>
+                        <div class="chat-input">
+                            <input type="text" id="chatInput" placeholder="Ketik pesan...">
+                            <button id="sendChatBtn" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Invoice Section -->
+                <section id="invoice" class="content-section">
+                    <h2>Laporan Invoice</h2>
+                    <div class="filter-container">
+                        <div class="filter-group">
+                            <label for="filterMitra">Filter Mitra</label>
+                            <select id="filterMitra">
+                                <option value="">Semua Mitra</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filterTanggal">Filter Tanggal</label>
+                            <input type="date" id="filterTanggal">
+                        </div>
+                        <button id="applyFilter" class="btn btn-secondary">
+                            <i class="fas fa-filter"></i>
+                            Terapkan Filter
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID Pesanan</th>
+                                    <th>Nama Mitra</th>
+                                    <th>Waktu Mulai</th>
+                                    <th>Waktu Selesai</th>
+                                    <th>Total</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoiceTable"></tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Pengaturan Section -->
+                <section id="pengaturan" class="content-section">
+                    <h2>Pengaturan</h2>
+                    <div class="form-container">
+                        <form id="changePasswordForm">
+                            <h3>Ganti Password</h3>
+                            <div class="form-group">
+                                <label for="currentPassword">Password Lama</label>
+                                <input type="password" id="currentPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newPassword">Password Baru</label>
+                                <input type="password" id="newPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmNewPassword">Konfirmasi Password Baru</label>
+                                <input type="password" id="confirmNewPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-key"></i>
+                                Ganti Password
+                            </button>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+    <script>
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAdminAuth();
+            await initializeDashboard();
+            setupNavigation();
+            setupEventListeners();
+        });
+        
+        // Navigation
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.content-section');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetSection = item.dataset.section;
+                    
+                    // Update active nav item
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Show target section
+                    sections.forEach(section => section.classList.remove('active'));
+                    document.getElementById(targetSection).classList.add('active');
+                    
+                    // Update page title
+                    document.getElementById('pageTitle').textContent = item.querySelector('span').textContent;
+                    
+                    // Load section data
+                    loadSectionData(targetSection);
+                });
+            });
+        }
+        
+        // Event listeners
+        function setupEventListeners() {
+            // Kirim saldo form
+            document.getElementById('kirimSaldoForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const mitraId = document.getElementById('mitraSelect').value;
+                const nominal = parseInt(document.getElementById('nominalSaldo').value);
+                
+                const result = await kirimSaldoManual(mitraId, nominal);
+                if (result.success) {
+                    showNotification('Saldo berhasil dikirim!', 'success');
+                    document.getElementById('kirimSaldoForm').reset();
+                    loadSectionData('beranda');
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            });
+            
+            // Change password form
+            document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+                
+                if (newPassword !== confirmNewPassword) {
+                    showNotification('Password baru dan konfirmasi tidak cocok', 'error');
+                    return;
+                }
+                
+                const result = await changeAdminPassword(currentPassword, newPassword);
+                if (result.success) {
+                    showNotification('Password berhasil diubah!', 'success');
+                    document.getElementById('changePasswordForm').reset();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            });
+            
+            // Chat functionality
+            document.getElementById('sendChatBtn').addEventListener('click', sendChatMessage);
+            document.getElementById('chatInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+            
+            // Filter functionality
+            document.getElementById('applyFilter').addEventListener('click', applyInvoiceFilter);
+        }
+        
+        // Load section data
+        async function loadSectionData(section) {
+            switch (section) {
+                case 'beranda':
+                    await loadDashboardStats();
+                    await loadRecentActivities();
+                    break;
+                case 'verifikasi':
+                    await loadVerifikasiMitra();
+                    break;
+                case 'topup':
+                    await loadTopupRequests();
+                    break;
+                case 'kirim-saldo':
+                    await loadMitraSelect();
+                    break;
+                case 'kelola-mitra':
+                    await loadAllMitra();
+                    break;
+                case 'live-chat':
+                    await loadChatMessages();
+                    break;
+                case 'invoice':
+                    await loadInvoiceData();
+                    await loadMitraFilter();
+                    break;
+            }
+        }
+        
+        // Initialize dashboard
+        async function initializeDashboard() {
+            await loadDashboardStats();
+            await loadRecentActivities();
+            
+            // Set admin info
+            const adminData = JSON.parse(localStorage.getItem('adminData'));
+            document.getElementById('adminInfo').textContent = `Selamat datang, ${adminData.username}`;
+        }
+    </script>
+</body>
+</html>
